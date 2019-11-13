@@ -123,7 +123,11 @@ int JackPosixThread::StartImp(jack_native_thread_t* thread, int priority, int re
             return -1;
         }
 
+#ifdef SCHED_RESET_ON_FORK
+        if ((res = pthread_attr_setschedpolicy(&attributes, JACK_SCHED_POLICY|SCHED_RESET_ON_FORK))) {
+#else
         if ((res = pthread_attr_setschedpolicy(&attributes, JACK_SCHED_POLICY))) {
+#endif
             jack_error("Cannot set RR scheduling class for RT thread res = %d", res);
             return -1;
         }
